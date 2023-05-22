@@ -6,16 +6,14 @@ pragma solidity ^0.8.20;
 // voteForCandidate1 and voteForCandidate2.
 // Each function should increment the respective candidate's vote count when called.
 contract SimpleDualVote {
+  uint256 public candidate1;
+  uint256 public candidate2;
 
-    uint256 public candidate1;
-    uint256 public candidate2;
+  function voteForCandidate1() public {
+    candidate1++;
+  }
 
-    function voteForCandidate1() public {
-        candidate1 += 1;
-    }
-
-    function voteForCandidate2() public {
-        candidate2 += 1;
-    }
-
+  function voteForCandidate2() public {
+    candidate2++;
+  }
 }
