@@ -7,24 +7,48 @@ pragma solidity ^0.8.20;
 // An operator can add/remove address to the isAllowed list.
 // The owner can add/remove address to the isAllowed list + can add/remove operators.
 contract Allowlist {
-  address public owner;
-  mapping(address => bool) public operators;
-  mapping(address => bool) public isAllowed;
+    address public owner;
+    mapping(address => bool) public operators;
+    mapping(address => bool) public isAllowed;
 
-  error OnlyOwner();
-  error OnlyOperator();
+    error OnlyOwner();
+    error OnlyOperator();
 
-  constructor() { }
+    constructor() {
+        owner = msg.sender;
+    }
 
-  /// @param who The address to add to the operators
-  function addOperator(address who) external { }
+    modifier isOperator() {
+        if(operators[msg.sender] != true) {
+            revert OnlyOperator();
+        }
+        _;
+    }
 
-  /// @param who The address to remove from the operators
-  function removeOperator(address who) external { }
+    modifier isOwner() {
+        if(msg.sender != owner) {
+            revert OnlyOwner();
+        }
+        _;
+    }
 
-  /// @param who The address to add to the allow list
-  function add(address who) external { }
+    /// @param who The address to add to the operators
+    function addOperator(address who) external isOwner {
+        operators[who] = true;
+    }
 
-  /// @param who The address to remove to the allow list
-  function remove(address who) external { }
+    /// @param who The address to remove from the operators
+    function removeOperator(address who) external isOwner {
+        delete operators[who];
+    }
+
+    /// @param who The address to add to the allow list
+    function add(address who) external isOperator{
+        isAllowed[who] = true;
+    }
+
+    /// @param who The address to remove to the allow list
+    function remove(address who) external isOperator{
+        delete isAllowed[who];
+    }
 }

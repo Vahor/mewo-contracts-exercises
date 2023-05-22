@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import { Test } from "forge-std/Test.sol";
-import { Allowlist } from "./Allowlist.a.sol";
+import { Allowlist } from "./Allowlist.sol";
 
 contract AllowlistTest is Test {
   address owner = makeAddr("owner");
