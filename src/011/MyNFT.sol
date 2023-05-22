@@ -9,7 +9,8 @@ import {ERC721} from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 contract MyNFT is ERC721 {
     uint256 public constant EARLY = 0.05 ether;
     uint256 public constant NORMAL = 0.1 ether;
-    uint16 public constant EARLY_BATCH = 10_000;
+    uint16 public constant EARLY_BATCH = 1_000;
+    uint16 public constant MAX_SUPPLY = 10_000;
 
     uint16 public totalSupply = 0;
 
@@ -17,18 +18,19 @@ contract MyNFT is ERC721 {
 
     constructor() ERC721("MyNFT", "MNFT") {}
 
-    function max(uint256 a, uint256 b) private view returns (uint256)  {
+    function max(uint256 a, uint256 b) private pure returns (uint256)  {
         if (a > b) return a;
         return b;
     }
 
-    function min(uint256 a, uint256 b) private view returns (uint256)  {
+    function min(uint256 a, uint256 b) private pure returns (uint256)  {
         if (a < b) return a;
         return b;
     }
 
     function price(uint256 quantity) public view returns (uint256) {
         require(quantity > 0);
+        require(totalSupply + quantity <= MAX_SUPPLY);
         uint256 withEarlyPrice = totalSupply > EARLY_BATCH ? 0 : min(quantity, EARLY_BATCH);
         uint256 withNormalPrice = max(quantity - withEarlyPrice, 0);
 
@@ -40,9 +42,10 @@ contract MyNFT is ERC721 {
 
     function purchase(uint256 quantity) external payable {
         require(quantity > 0);
-        uint256 price = price(quantity);
-        if (price > msg.value) {
-            revert InsufficientValue(price, msg.value);
+        require(totalSupply + quantity <= MAX_SUPPLY);
+        uint256 totalPrice = price(quantity);
+        if (totalPrice > msg.value) {
+            revert InsufficientValue(totalPrice, msg.value);
         }
 
         for (uint256 i = 0; i < quantity; ++i) {
