@@ -16,6 +16,12 @@ contract NFTSaleTest is Test {
     token = new MyNFT();
   }
 
+  function test_price(uint256 actual) public {
+    assertEq(token.price(1), 0.05 ether);
+    assertEq(token.price(2), 0.1 ether);
+    assertEq(token.price(11_000), ((0.05 ether * 10_000) + (0.1 ether * 1000)));
+  }
+
   function test_purchase_revertInsufficientValue(uint256 actual) public {
     uint256 expected = token.EARLY();
     actual = bound(actual, 1, expected - 1);
