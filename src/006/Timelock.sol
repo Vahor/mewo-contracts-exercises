@@ -20,8 +20,12 @@ contract Timelock {
     _;
   }
 
-  function withdraw() public isOwner {
+  modifier isReleased() {
     require(block.timestamp >= releaseDate);
+    _;
+  }
+
+  function withdraw() public isOwner isReleased {
     owner.transfer(address(this).balance);
   }
 }
