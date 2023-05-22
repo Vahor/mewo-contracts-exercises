@@ -9,9 +9,13 @@ import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol"
 // As always, add withdraw functiononly callable the owner of the contract but use the Ownable contract from the OpenZeppelin library.
 contract Crowdsale {
   uint256 public constant RATE = 10000;
-  IERC20 token;
+  IERC20 private token;
 
-  constructor(IERC20 _token) { }
+  constructor(IERC20 _token) {
+    token = _token;
+  }
 
-  function buy() public payable { }
+  function buy() public payable {
+    token.transfer(msg.sender, msg.value * RATE  );
+  }
 }
