@@ -6,5 +6,22 @@ pragma solidity ^0.8.20;
 // - Contract should be able to receive additional funds at any time (see Solidity receive function)
 // - Only owner can call the `withdraw` function to withdraw the funds.
 contract Timelock {
-  constructor(address _owner, uint256 _releaseDate) payable { }
+
+  address payable public owner;
+  uint256 public releaseDate;
+
+  constructor(address _owner, uint256 _releaseDate) payable {
+    owner = payable(_owner);
+    releaseDate = _releaseDate;
+  }
+
+  modifier isOwner() {
+    require(msg.sender == owner);
+    _;
+  }
+
+  function withdraw() public isOwner {
+    require(block.timestamp >= releaseDate);
+    owner.transfer(address(this).balance);
+  }
 }
